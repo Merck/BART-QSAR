@@ -1,0 +1,17 @@
+--------------------------------------------------
+Third party R libraries listed by License type
+[Format: Name - URL]
+--------------------------------------------------
+
+GPL-2 | GPL-3 [expanded from: GPL (≥ 2)]
+  *RandomForests - https://www.stat.berkeley.edu/~breiman/RandomForests/
+  *dbarts - https://github.com/vdorie/dbarts
+  *coda - https://cran.r-project.org/web/packages/coda/
+
+GPL-2 | GPL-3 [expanded from: GPL]
+  *quantregForest - http://github.com/lorismichel/quantregForest
+
+The MIT License (MIT)
+Copyright (c) 2016 Stefan Wager
+  *randomFoestCI - https://github.com/swager/randomForestCI/blob/master/LICENSE.md
+
