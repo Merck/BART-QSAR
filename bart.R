@@ -35,14 +35,17 @@ load(file=paste0(folder, "x.test.rda"))
 load(file=paste0(folder, "y.test.rda"))
 
 #---------------------------------BART----------------------------------
+#train the model and predict the underlying response function
 bartFit <- bart(x.train=x.train, 
                 y.train=y.train, 
                 x.test = x.test,
                 sigest = sd(y.train),
                 ntree=2000, power=1, ndpost=2000, nskip=1000)
 
+#calcuate R2 for prediction accuracy
 R2.bart <- cor(bartFit$yhat.test.mean, y.test)
-#[1] 0.6244436
+
+#obtain prediction intervals and corresponding coverage and median width
 pi.bart <- getPIbart(y.test, bartFit$yhat.test, bartFit$sigma)
 cov.bart <- mean(pi.bart$pi.lower < y.test & pi.bart$pi.upper > y.test)
 mw.bart <- median(pi.bart$pi.upper-  pi.bart$pi.lower)
@@ -50,8 +53,14 @@ cov.bart; mw.bart
 
 
 #-------------------------------OpenBT-bart-----------------------------
-openBTbartFit <- psambrt(x.train=x.train, y.train=y.train, ntreeh=1, tc=8)
-openBTbartPred <- psambrt.predict(openBTbartFit, x.test=x.test)
+#train the model
+openBTbartFit <- openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
+                        ntreeh=1, tc=8, model="bart", modelname="qsarbart")
+
+# Predict the underlying response function
+openBTbartPred <- predict.openbt(openBTbartFit, x.test, tc=8)
+
+#obtain prediction intervals and corresponding coverage and median width
 pi.openBTbart <- getPIbart(y.test, openBTbartPred$mdraws, openBTbartPred$sdraws)
 cov.openBTbart <- mean(pi.openBTbart$pi.lower < y.test & pi.openBTbart$pi.upper > y.test)
 mw.openBTbart <- median(pi.openBTbart$pi.upper - pi.openBTbart$pi.lower)
@@ -59,10 +68,28 @@ cov.openBTbart; mw.openBTbart
 
 
 #-------------------------------OpenBT-hbart-----------------------------
-openBThbartFit <- psambrt(x.train=x.train, y.train=y.train, tc=8)
-openBThbartPred <- psambrt.predict(openBThbartFit, x.test=x.test)
+openBThbartFit <-  openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
+                          ntreeh=40, tc=8, model="hbart", modelname="qsarhbart")
+
+openBThbartPred <- predict.openbt(openBThbartFit, x.test, tc=8)
+
 pi.openBThbart <- getPIbart(y.test, openBThbartPred$mdraws, openBThbartPred$sdraws)
 cov.openBThbart <- mean(pi.openBThbart$pi.lower < y.test & pi.openBThbart$pi.upper > y.test)
 mw.openBThbart <- median(pi.openBThbart$pi.upper - pi.openBThbart$pi.lower)
 cov.openBThbart; mw.openBThbart
+
+#-------------------------------OpenBT-truncation-----------------------------
+thresh <- quantile(y.train, 0.4)
+y.train[y.train < thresh] <- thresh
+y.test[y.test < thresh] <- thresh
+
+openBTtbartFit <- openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
+                         ntreeh=1, tc=8, model="merck_truncated", modelname="qsartbart")
+
+openBTtbartPred <- predict.openbt(openBTtbartFit, x.test, tc=8)
+
+pi.openBTtbart <- getPIbart(y.test, openBTtbartPred$mdraws, openBTtbartPred$sdraws)
+cov.openBTtbart <- mean(pi.openBTtbart$pi.lower < y.test & pi.openBTtbart$pi.upper > y.test)
+mw.openBTtbart <- median(pi.openBTtbart$pi.upper - pi.openBTtbart$pi.lower)
+cov.openBTtbart; mw.openBTtbart
 
