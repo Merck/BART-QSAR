@@ -21,11 +21,8 @@ library(coda)
 folder <- ('~/packages/BART-QSAR/')
 
 
-#This shared library was built from compling files donwloaded from OpenBT website.
-dyn.load(paste0(folder, "allbrt.so"))
-
 #R code for OpenBT-bart and OpenBT-hbart. This file was downloaded from OpenBT website.
-source(paste0(folder,"psambrt.R"))
+source("openbt.R")
 
 source(paste0(folder,"getPIbart.R"))
 
