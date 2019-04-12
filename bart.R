@@ -21,7 +21,8 @@ library(coda)
 folder <- ('~/packages/BART-QSAR/')
 
 
-#R code for OpenBT-bart and OpenBT-hbart. This file was downloaded from OpenBT website.
+#R code for OpenBT-bart, OpenBT-hbart, and OpenBT-truncation. 
+#This file was downloaded from OpenBT website.
 source("openbt.R")
 
 source(paste0(folder,"getPIbart.R"))
