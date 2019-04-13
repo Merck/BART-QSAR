@@ -55,7 +55,7 @@ cov.bart; mw.bart
 openBTbartFit <- openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
                         ntreeh=1, tc=8, model="bart", modelname="qsarbart")
 
-# Predict the underlying response function
+#Predict the underlying response function
 openBTbartPred <- predict.openbt(openBTbartFit, x.test, tc=8)
 
 #obtain prediction intervals and corresponding coverage and median width
@@ -66,26 +66,33 @@ cov.openBTbart; mw.openBTbart
 
 
 #-------------------------------OpenBT-hbart-----------------------------
+#train the model
 openBThbartFit <-  openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
                           ntreeh=40, tc=8, model="hbart", modelname="qsarhbart")
 
+#Predict the underlying response function
 openBThbartPred <- predict.openbt(openBThbartFit, x.test, tc=8)
 
+#obtain prediction intervals and corresponding coverage and median width
 pi.openBThbart <- getPIbart(y.test, openBThbartPred$mdraws, openBThbartPred$sdraws)
 cov.openBThbart <- mean(pi.openBThbart$pi.lower < y.test & pi.openBThbart$pi.upper > y.test)
 mw.openBThbart <- median(pi.openBThbart$pi.upper - pi.openBThbart$pi.lower)
 cov.openBThbart; mw.openBThbart
 
 #-------------------------------OpenBT-truncation-----------------------------
+#The observed activities were TRUNCATED
 thresh <- quantile(y.train, 0.4)
 y.train[y.train < thresh] <- thresh
-y.test[y.test < thresh] <- thresh
 
+
+#Train a model with imputation of truncated activities
 openBTtbartFit <- openbt(x.train=x.train, y.train=y.train, pbd=c(0.7, 0.0),
                          ntreeh=1, tc=8, model="merck_truncated", modelname="qsartbart")
 
+#predict the UNTRUNCATED activities for test data
 openBTtbartPred <- predict.openbt(openBTtbartFit, x.test, tc=8)
 
+#obtain prediction intervals and corresponding coverage and median width
 pi.openBTtbart <- getPIbart(y.test, openBTtbartPred$mdraws, openBTtbartPred$sdraws)
 cov.openBTtbart <- mean(pi.openBTtbart$pi.lower < y.test & pi.openBTtbart$pi.upper > y.test)
 mw.openBTtbart <- median(pi.openBTtbart$pi.upper - pi.openBTtbart$pi.lower)
